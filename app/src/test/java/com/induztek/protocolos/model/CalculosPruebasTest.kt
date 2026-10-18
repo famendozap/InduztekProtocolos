@@ -30,6 +30,13 @@ class CalculosPruebasTest {
     }
 
     @Test
+    fun `esAislamientoAceptable retorna true para IP mayor o igual a 1 coma 5`() {
+        assertTrue(CalculosPruebas.esAislamientoAceptable(1.5))
+        assertTrue(CalculosPruebas.esAislamientoAceptable(2.8))
+        assertFalse(CalculosPruebas.esAislamientoAceptable(1.2))
+    }
+
+    @Test
     fun `calcularTtr dentro de rango no genera alerta`() {
         val v1 = 10000.0
         val v2 = 230.0
