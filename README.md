@@ -1,18 +1,29 @@
-# Induztek Protocolos (MVP)
+# Induztek Protocolos
 
-App Android (Kotlin, Jetpack Compose, Material 3, MVVM, Room) para registrar pruebas eléctricas
-en terreno y consultar el historial de cada equipo. Caso DSY1105.
+Aplicación Móvil para la Formalización Inmediata de Protocolos de Prueba Eléctrica en Terreno.
+Desarrollada para Induztek Ingeniería SpA (Caso DSY1105 - Duoc UC).
 
-## Cómo abrirlo
-1. Descomprime el zip. Abre en Android Studio **esta carpeta** (la que contiene `settings.gradle.kts`, `gradlew` y `app/`).
-2. Espera el *Gradle Sync* (la primera vez descarga dependencias; requiere internet). Gradle JDK: 17.
-3. Ejecuta el módulo `app` en un emulador o dispositivo (API 26+).
+## 🚀 Características Implementadas
 
-## Qué incluye hoy
-- Lista de equipos, alta de equipo (TAG único por instalación), historial por equipo y registro de pruebas.
-- Mediciones con valor numérico validado (coma o punto decimal).
-- Los protocolos quedan siempre en "Registrado en terreno" (formalizar requiere roles: pendiente).
+- **Base de Datos SQLite Nativa:** Administrada mediante `InduztekDbHelper` (`SQLiteOpenHelper`) con tablas de usuarios, equipos y protocolos.
+- **Autenticación y Registro:** Inicio de sesión estricto desde SQLite y pantalla de registro de nuevas cuentas.
+- **Gestión de Roles (P-01 al P-04):**
+  - **Técnico (`tecnico` / `1234`):** Registro de pruebas en terreno y equipos.
+  - **Ingeniero (`ingeniero` / `1234`):** Creación y formalización oficial de protocolos.
+  - **Jefe Técnico (`jefe` / `1234`):** Gestión completa de la operación.
+  - **Cliente (`cliente` / `1234`):** Vista en modo lectura para consultar instalaciones y estado de protocolos.
+- **Cálculos Automáticos y Pruebas:**
+  - **Índice de Polarización (IP):** Cálculo automático con diagnóstico de estado.
+  - **Relación de Transformación (TTR):** Variación de voltaje con alerta automática cuando supera el 25%.
+- **Paneles de Estadísticas en Tiempo Real:** Gráficos de barras y gráficos circulares creados dinámicamente con `Canvas` en Jetpack Compose.
+- **Respaldo Inmediato y Visitas:** Pantalla de Acta de Recepción Técnica.
+- **Estructura Backend Retrofit:** Cliente `RetrofitClient` e `InduztekApiService` configurados con DTOs para comunicación REST.
+- **Pruebas Unitarias:** 11 unit tests aprobados con JUnit en `CalculosPruebasTest`, `InstrumentoTest` y `MedicionTest`.
 
-## Pendiente respecto del caso
-Roles y login, visitas/OT y acta, catálogo de pruebas por tipo de equipo, cálculo automático de resultados,
-instrumentos y calibración, historial de estados, backend Spring Boot + Retrofit y sincronización.
+## 🛠️ Tecnologías Utilizadas
+- **Lenguaje:** Kotlin 2.0.21
+- **UI:** Jetpack Compose + Material Design 3
+- **Arquitectura:** MVVM (Model-View-ViewModel) + Flow / StateFlow
+- **Persistencia:** SQLite (`SQLiteOpenHelper`)
+- **Red:** Retrofit 2 + Gson + OkHttp Interceptor
+- **Testing:** JUnit 4
