@@ -18,8 +18,9 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
 /**
- * Helper de SQLite nativo (SQLiteOpenHelper) tal como lo solicita el docente.
+ * Helper de SQLite nativo (SQLiteOpenHelper) para la persisencia local.
  * Gestiona la base de datos "induztek_sqlite.db" con tablas "usuarios", "equipos" y "protocolos".
+ * Incluye precarga de usuarios semilla (tecnico, ingeniero, jefe, cliente) y claves foraneas activas.
  */
 class InduztekDbHelper(context: Context) :
     SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
