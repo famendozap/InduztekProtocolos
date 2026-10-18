@@ -21,6 +21,13 @@ object CalculosPruebas {
     }
 
     /**
+     * Retorna true si el IP es mayor o igual a 1.5 (Aislamiento Aceptable según norma)
+     */
+    fun esAislamientoAceptable(ip: Double): Boolean {
+        return ip >= 1.5
+    }
+
+    /**
      * Calcula el TTR (Relación de Transformación) y la variación % respecto al valor esperado (placa).
      * Alerta si la variación supera la tolerancia del 25%.
      */
