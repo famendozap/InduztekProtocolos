@@ -9,9 +9,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.withContext
 
-/**
- * Punto único de acceso a los datos locales (SQLite nativo vía InduztekDbHelper).
- */
 class InduztekRepository(
     private val dbHelper: InduztekDbHelper
 ) {

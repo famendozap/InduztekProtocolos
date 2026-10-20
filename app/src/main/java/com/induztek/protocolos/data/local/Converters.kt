@@ -9,10 +9,6 @@ import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-/**
- * Conversores para que Room pueda guardar tipos que no son primitivos:
- * fecha/hora, enums y la lista de mediciones de un protocolo.
- */
 class Converters {
 
     private val dateFormatter: DateTimeFormatter = DateTimeFormatter.ISO_LOCAL_DATE_TIME

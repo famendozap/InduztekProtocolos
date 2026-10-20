@@ -56,7 +56,6 @@ import com.induztek.protocolos.model.CalculosPruebas
 import com.induztek.protocolos.model.Medicion
 import java.util.Locale
 
-/** Permite que la lista de mediciones sobreviva a una rotación de pantalla. */
 private val MedicionesSaver = listSaver<SnapshotStateList<Medicion>, ArrayList<String>>(
     save = { lista -> lista.map { arrayListOf(it.nombre, it.valor, it.unidad) } },
     restore = { guardado ->
@@ -84,7 +83,6 @@ fun NuevaPruebaScreen(
     var errorLocal by rememberSaveable { mutableStateOf<String?>(null) }
     var fotoEvidenciaBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Lanzador de Cámara para Evidencia Fotográfica en Terreno
     val lanzadorCamaraEvidencia = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -93,7 +91,6 @@ fun NuevaPruebaScreen(
         }
     }
 
-    // Solicitante de Permiso de Cámara
     val pedirPermisoCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { concedido ->
@@ -112,11 +109,9 @@ fun NuevaPruebaScreen(
         }
     }
 
-    // Estados para Asistente IP (Índice de Polarización)
     var r1minText by rememberSaveable { mutableStateOf("") }
     var r10minText by rememberSaveable { mutableStateOf("") }
 
-    // Estados para Asistente TTR
     var v1Text by rememberSaveable { mutableStateOf("") }
     var v2Text by rememberSaveable { mutableStateOf("") }
     var vPlacaText by rememberSaveable { mutableStateOf("") }
@@ -145,7 +140,7 @@ fun NuevaPruebaScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // --- FOTO DE EVIDENCIA EN TERRENO CON CÁMARA ---
+
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text(" Evidencia Fotográfica en Terreno", style = MaterialTheme.typography.titleMedium)
@@ -169,7 +164,6 @@ fun NuevaPruebaScreen(
                 }
             }
 
-            // --- ASISTENTE DE CÁLCULO IP ---
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("⚡ Cálculo Automático de IP (Índice de Polarización)", style = MaterialTheme.typography.titleSmall)
@@ -211,7 +205,6 @@ fun NuevaPruebaScreen(
                 }
             }
 
-            // --- ASISTENTE DE CÁLCULO TTR ---
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("Cálculo Automático de TTR (Relación Transformación)", style = MaterialTheme.typography.titleSmall)

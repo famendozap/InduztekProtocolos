@@ -36,7 +36,7 @@ fun EstadisticasScreen(
     protocolos: List<Protocolo>,
     onVolver: () -> Unit
 ) {
-    // 1. Conteo real dinámico de Equipos por Tipo
+
     val transformadoresCount = equipos.count { it.tipo == TipoEquipo.TRANSFORMADOR }.toFloat()
     val releCount = equipos.count { it.tipo == TipoEquipo.RELE_PROTECCION }.toFloat()
     val celdasCount = equipos.count { it.tipo == TipoEquipo.CELDA }.toFloat()
@@ -51,7 +51,6 @@ fun EstadisticasScreen(
         DatoGrafico("Otro", otrosCount, Color(0xFF00ACC1))
     )
 
-    // 2. Conteo real dinámico de Protocolos por Estado
     val registradosCount = protocolos.count { it.estado == EstadoProtocolo.REGISTRADO_EN_TERRENO }.toFloat()
     val formalizadosCount = protocolos.count { it.estado == EstadoProtocolo.FORMALIZADO }.toFloat()
 

@@ -28,7 +28,7 @@ abstract class AppDatabase : RoomDatabase() {
                     AppDatabase::class.java,
                     "induztek_protocolos.db"
                 )
-                    // MVP: si cambia el esquema se recrea la base local (no hay datos productivos).
+
                     .fallbackToDestructiveMigration()
                     .build().also { INSTANCE = it }
             }

@@ -53,7 +53,6 @@ fun InduztekApp(application: Application) {
     val authMensajeError by authViewModel.mensajeError.collectAsState()
     val cargando by authViewModel.cargando.collectAsState()
 
-    // Redirección limpia al iniciar sesión o registrarse
     LaunchedEffect(usuarioActual) {
         if (usuarioActual != null) {
             navController.navigate(Rutas.LISTA) {

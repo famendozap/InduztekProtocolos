@@ -34,10 +34,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.induztek.protocolos.model.TipoEquipo
 
-/**
- * Formulario para registrar un nuevo equipo del cliente antes de poder
- * asociarle protocolos de prueba. El código (TAG) es único dentro de cada instalación.
- */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun NuevoEquipoScreen(
@@ -52,7 +48,6 @@ fun NuevoEquipoScreen(
     var menuTipoExpandido by remember { mutableStateOf(false) }
     val tipoSeleccionado = TipoEquipo.valueOf(tipoNombre)
 
-    // Al entrar a la pantalla no se arrastran errores de otras pantallas.
     LaunchedEffect(Unit) { onLimpiarError() }
 
     Scaffold(

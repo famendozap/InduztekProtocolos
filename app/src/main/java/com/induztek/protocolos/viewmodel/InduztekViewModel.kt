@@ -22,11 +22,6 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 
-/**
- * ViewModel único de la app: mantiene la lista de equipos, el historial del
- * equipo seleccionado y las operaciones de creación (equipo y protocolo).
- * Según crezca el proyecto conviene separarlo en varios ViewModels por pantalla.
- */
 class InduztekViewModel(application: Application) : AndroidViewModel(application) {
 
     private val repository: InduztekRepository
@@ -75,7 +70,7 @@ class InduztekViewModel(application: Application) : AndroidViewModel(application
         }
         val instalacionLimpia = instalacionCliente.trim()
         viewModelScope.launch {
-            // RN-01: el TAG es único dentro de cada instalación, no globalmente.
+
             val existente = repository.buscarEquipo(codigoLimpio, instalacionLimpia)
             if (existente != null) {
                 _mensajeError.value = "Ya existe el equipo $codigoLimpio en $instalacionLimpia"

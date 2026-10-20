@@ -4,10 +4,6 @@ import java.util.Locale
 
 object CalculosPruebas {
 
-    /**
-     * Calcula el Índice de Polarización (IP): IP = R10min / R1min
-     * @return Par con el valor del IP y la evaluación del estado
-     */
     fun calcularIndicePolarizacion(r1min: Double, r10min: Double): Pair<Double, String> {
         if (r1min <= 0) return 0.0 to "Inválido"
         val ip = r10min / r1min
@@ -20,17 +16,10 @@ object CalculosPruebas {
         return ip to evaluacion
     }
 
-    /**
-     * Retorna true si el IP es mayor o igual a 1.5 (Aislamiento Aceptable según norma)
-     */
     fun esAislamientoAceptable(ip: Double): Boolean {
         return ip >= 1.5
     }
 
-    /**
-     * Calcula el TTR (Relación de Transformación) y la variación % respecto al valor esperado (placa).
-     * Alerta si la variación supera la tolerancia del 25%.
-     */
     fun calcularTtr(vPrimario: Double, vSecundario: Double, vPlacaEsperado: Double): ResultadoTtr {
         if (vSecundario <= 0 || vPlacaEsperado <= 0) {
             return ResultadoTtr(0.0, 0.0, true, "Valores de voltaje no válidos")

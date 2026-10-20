@@ -8,5 +8,5 @@ data class Visita(
     val instalacion: String,
     val fechaHora: LocalDateTime = LocalDateTime.now(),
     val tecnicoAsignado: String,
-    val estado: String = "EN_PROCESO" // EN_PROCESO, FINALIZADA, CANCELADA
+    val estado: String = "EN_PROCESO"
 )

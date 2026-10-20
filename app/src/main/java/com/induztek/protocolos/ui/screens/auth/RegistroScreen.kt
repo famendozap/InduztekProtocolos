@@ -58,7 +58,6 @@ fun RegistroScreen(
     var menuRolExpandido by remember { mutableStateOf(false) }
     var fotoBitmap by remember { mutableStateOf<Bitmap?>(null) }
 
-    // Lanzador de Cámara de Compose
     val lanzadorCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -67,7 +66,6 @@ fun RegistroScreen(
         }
     }
 
-    // Solicitante de Permiso de Cámara
     val pedirPermisoCamara = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
     ) { concedido ->
@@ -98,7 +96,6 @@ fun RegistroScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Avatar con cámara
         AvatarCircular(bitmap = fotoBitmap, tamano = 72.dp)
 
         Spacer(modifier = Modifier.height(8.dp))

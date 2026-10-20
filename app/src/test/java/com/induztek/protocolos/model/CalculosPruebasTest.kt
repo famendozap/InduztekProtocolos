@@ -10,7 +10,7 @@ class CalculosPruebasTest {
     @Test
     fun `calcularIndicePolarizacion con valores normales retorna Bueno`() {
         val r1min = 100.0
-        val r10min = 250.0 // IP = 2.5 -> Bueno
+        val r10min = 250.0
 
         val (ip, evaluacion) = CalculosPruebas.calcularIndicePolarizacion(r1min, r10min)
 
@@ -21,7 +21,7 @@ class CalculosPruebasTest {
     @Test
     fun `calcularIndicePolarizacion menor a 1 coma 5 retorna Peligroso`() {
         val r1min = 100.0
-        val r10min = 120.0 // IP = 1.2 -> Peligroso
+        val r10min = 120.0
 
         val (ip, evaluacion) = CalculosPruebas.calcularIndicePolarizacion(r1min, r10min)
 
@@ -40,7 +40,7 @@ class CalculosPruebasTest {
     fun `calcularTtr dentro de rango no genera alerta`() {
         val v1 = 10000.0
         val v2 = 230.0
-        val vPlaca = 43.48 // 10000 / 230 = 43.478
+        val vPlaca = 43.48
 
         val resultado = CalculosPruebas.calcularTtr(v1, v2, vPlaca)
 
@@ -51,8 +51,8 @@ class CalculosPruebasTest {
     @Test
     fun `calcularTtr fuera de rango 25 por ciento genera alerta`() {
         val v1 = 10000.0
-        val v2 = 100.0 // TTR medido = 100
-        val vPlaca = 43.48 // Variacion > 100%
+        val v2 = 100.0
+        val vPlaca = 43.48
 
         val resultado = CalculosPruebas.calcularTtr(v1, v2, vPlaca)
 

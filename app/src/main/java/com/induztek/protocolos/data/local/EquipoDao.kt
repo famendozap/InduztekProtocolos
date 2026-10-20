@@ -9,7 +9,6 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface EquipoDao {
 
-    // ABORT: REPLACE borraría en cascada los protocolos de un equipo existente.
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertar(equipo: EquipoEntity): Long
 

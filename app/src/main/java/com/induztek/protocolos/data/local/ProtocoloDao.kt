@@ -16,7 +16,6 @@ interface ProtocoloDao {
     @Update
     suspend fun actualizar(protocolo: ProtocoloEntity)
 
-    /** Historial de pruebas de un equipo específico, más reciente primero (sección 3.2 del caso). */
     @Query("SELECT * FROM protocolos WHERE equipoId = :equipoId ORDER BY fechaHora DESC")
     fun observarHistorialPorEquipo(equipoId: Long): Flow<List<ProtocoloEntity>>
 

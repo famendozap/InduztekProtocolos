@@ -17,11 +17,6 @@ import org.json.JSONObject
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-/**
- * Helper de SQLite nativo (SQLiteOpenHelper) para la persisencia local.
- * Gestiona la base de datos "induztek_sqlite.db" con tablas "usuarios", "equipos" y "protocolos".
- * Soporta almacenamiento BLOB para fotos tomadas con la cámara.
- */
 class InduztekDbHelper(context: Context) :
     SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
 
@@ -29,7 +24,6 @@ class InduztekDbHelper(context: Context) :
         private const val NOMBRE_BD = "induztek_sqlite.db"
         private const val VERSION_BD = 3
 
-        // Tabla Usuarios
         private const val TABLA_USUARIOS = "usuarios"
         private const val US_ID = "id"
         private const val US_USERNAME = "username"
@@ -38,14 +32,12 @@ class InduztekDbHelper(context: Context) :
         private const val US_ROL = "rol"
         private const val US_FOTO = "fotoBytes"
 
-        // Tabla Equipos
         private const val TABLA_EQUIPOS = "equipos"
         private const val EQ_ID = "id"
         private const val EQ_CODIGO = "codigo"
         private const val EQ_TIPO = "tipo"
         private const val EQ_INSTALACION = "instalacionCliente"
 
-        // Tabla Protocolos
         private const val TABLA_PROTOCOLOS = "protocolos"
         private const val PR_ID = "id"
         private const val PR_EQUIPO_ID = "equipoId"
@@ -119,8 +111,6 @@ class InduztekDbHelper(context: Context) :
         }
     }
 
-    // --- CRUD USUARIOS ---
-
     fun registrarUsuario(username: String, nombre: String, contrasena: String, rol: String, fotoBytes: ByteArray? = null): Long {
         return try {
             val valores = ContentValues().apply {
@@ -163,8 +153,6 @@ class InduztekDbHelper(context: Context) :
             null
         }
     }
-
-    // --- CRUD EQUIPOS ---
 
     fun insertarEquipo(equipo: Equipo): Long {
         return try {
@@ -240,8 +228,6 @@ class InduztekDbHelper(context: Context) :
 
         return Equipo(id = id, codigo = codigo, tipo = tipo, instalacionCliente = instalacion)
     }
-
-    // --- CRUD PROTOCOLOS ---
 
     fun insertarProtocolo(protocolo: Protocolo): Long {
         return try {
@@ -379,7 +365,7 @@ class InduztekDbHelper(context: Context) :
                 )
             }
         } catch (e: Exception) {
-            // Ignorar error si el json es nulo o inválido
+
         }
         return lista
     }
