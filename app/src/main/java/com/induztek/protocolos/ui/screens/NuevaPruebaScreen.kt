@@ -1,6 +1,9 @@
 package com.induztek.protocolos.ui.screens
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -44,8 +47,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.induztek.protocolos.data.local.ConvertidorImagen
 import com.induztek.protocolos.model.CalculosPruebas
 import com.induztek.protocolos.model.Medicion
@@ -70,6 +75,7 @@ fun NuevaPruebaScreen(
     onGuardar: (mediciones: List<Medicion>, observaciones: String, fotoEvidenciaBytes: ByteArray?) -> Unit,
     onVolver: () -> Unit
 ) {
+    val context = LocalContext.current
     val mediciones = rememberSaveable(saver = MedicionesSaver) { mutableStateListOf<Medicion>() }
     var nombreMedicion by rememberSaveable { mutableStateOf("") }
     var valorMedicion by rememberSaveable { mutableStateOf("") }
@@ -84,6 +90,25 @@ fun NuevaPruebaScreen(
     ) { bitmap ->
         if (bitmap != null) {
             fotoEvidenciaBitmap = bitmap
+        }
+    }
+
+    // Solicitante de Permiso de Cámara
+    val pedirPermisoCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            lanzadorCamaraEvidencia.launch(null)
+        } else {
+            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun abrirCamara() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            lanzadorCamaraEvidencia.launch(null)
+        } else {
+            pedirPermisoCamara.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -136,7 +161,7 @@ fun NuevaPruebaScreen(
                         )
                     }
                     OutlinedButton(
-                        onClick = { lanzadorCamaraEvidencia.launch(null) },
+                        onClick = { abrirCamara() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
                         Text(if (fotoEvidenciaBitmap == null) "📷 Tomar Foto de Evidencia" else "📷 Cambiar Foto de Evidencia")

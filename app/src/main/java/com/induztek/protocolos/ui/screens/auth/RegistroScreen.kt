@@ -1,6 +1,9 @@
 package com.induztek.protocolos.ui.screens.auth
 
+import android.Manifest
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -31,8 +34,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import com.induztek.protocolos.data.local.ConvertidorImagen
 import com.induztek.protocolos.model.Rol
 import com.induztek.protocolos.ui.components.AvatarCircular
@@ -45,6 +50,7 @@ fun RegistroScreen(
     onRegistrarClick: (username: String, nombre: String, contrasena: String, rol: Rol, fotoBytes: ByteArray?) -> Unit,
     onVolverALogin: () -> Unit
 ) {
+    val context = LocalContext.current
     var username by remember { mutableStateOf("") }
     var nombre by remember { mutableStateOf("") }
     var contrasena by remember { mutableStateOf("") }
@@ -58,6 +64,25 @@ fun RegistroScreen(
     ) { bitmap ->
         if (bitmap != null) {
             fotoBitmap = bitmap
+        }
+    }
+
+    // Solicitante de Permiso de Cámara
+    val pedirPermisoCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { concedido ->
+        if (concedido) {
+            lanzadorCamara.launch(null)
+        } else {
+            Toast.makeText(context, "Permiso de cámara denegado", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun abrirCamara() {
+        if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
+            lanzadorCamara.launch(null)
+        } else {
+            pedirPermisoCamara.launch(Manifest.permission.CAMERA)
         }
     }
 
@@ -78,7 +103,7 @@ fun RegistroScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        OutlinedButton(onClick = { lanzadorCamara.launch(null) }) {
+        OutlinedButton(onClick = { abrirCamara() }) {
             Text("📷 Tomar Foto de Credencial")
         }
 
