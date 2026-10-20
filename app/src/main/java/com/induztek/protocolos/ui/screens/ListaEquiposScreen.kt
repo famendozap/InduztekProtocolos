@@ -118,7 +118,7 @@ fun ListaEquiposScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "🔒 Vista de Cliente — Solo Consulta de Instalaciones y Protocolos",
+                        text = " Vista de Cliente — Solo Consulta de Instalaciones y Protocolos",
                         style = MaterialTheme.typography.bodySmall,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp)
                     )

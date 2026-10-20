@@ -148,7 +148,7 @@ fun NuevaPruebaScreen(
             // --- FOTO DE EVIDENCIA EN TERRENO CON CÁMARA ---
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("📷 Evidencia Fotográfica en Terreno", style = MaterialTheme.typography.titleMedium)
+                    Text(" Evidencia Fotográfica en Terreno", style = MaterialTheme.typography.titleMedium)
                     if (fotoEvidenciaBitmap != null) {
                         Image(
                             bitmap = fotoEvidenciaBitmap!!.asImageBitmap(),
@@ -164,7 +164,7 @@ fun NuevaPruebaScreen(
                         onClick = { abrirCamara() },
                         modifier = Modifier.fillMaxWidth()
                     ) {
-                        Text(if (fotoEvidenciaBitmap == null) "📷 Tomar Foto de Evidencia" else "📷 Cambiar Foto de Evidencia")
+                        Text(if (fotoEvidenciaBitmap == null) " Tomar Foto de Evidencia" else " Cambiar Foto de Evidencia")
                     }
                 }
             }
@@ -214,7 +214,7 @@ fun NuevaPruebaScreen(
             // --- ASISTENTE DE CÁLCULO TTR ---
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Text("🔄 Cálculo Automático de TTR (Relación Transformación)", style = MaterialTheme.typography.titleSmall)
+                    Text("Cálculo Automático de TTR (Relación Transformación)", style = MaterialTheme.typography.titleSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         OutlinedTextField(
                             value = v1Text,

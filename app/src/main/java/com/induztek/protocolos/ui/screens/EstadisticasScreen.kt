@@ -83,7 +83,7 @@ fun EstadisticasScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "📊 Distribución de Equipos por Tipo (${equipos.size} Total)",
+                        text = "Distribución de Equipos por Tipo (${equipos.size} Total)",
                         style = MaterialTheme.typography.titleMedium
                     )
                     GraficoBarras(datos = datosBarras)
@@ -93,7 +93,7 @@ fun EstadisticasScreen(
             Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(16.dp)) {
                     Text(
-                        text = "🥧 Estado de Protocolos (${protocolos.size} Total)",
+                        text = "Estado de Protocolos (${protocolos.size} Total)",
                         style = MaterialTheme.typography.titleMedium
                     )
                     GraficoCircular(datos = datosTorta)

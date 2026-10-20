@@ -104,7 +104,7 @@ fun RegistroScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         OutlinedButton(onClick = { abrirCamara() }) {
-            Text("📷 Tomar Foto de Credencial")
+            Text(" Tomar Foto de Credencial")
         }
 
         Spacer(modifier = Modifier.height(16.dp))
