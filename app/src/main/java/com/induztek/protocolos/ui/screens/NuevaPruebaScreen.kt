@@ -1,12 +1,18 @@
 package com.induztek.protocolos.ui.screens
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -28,14 +34,19 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import com.induztek.protocolos.data.local.ConvertidorImagen
 import com.induztek.protocolos.model.CalculosPruebas
 import com.induztek.protocolos.model.Medicion
 import java.util.Locale
@@ -56,7 +67,7 @@ fun NuevaPruebaScreen(
     codigoEquipo: String,
     mensajeError: String?,
     onLimpiarError: () -> Unit,
-    onGuardar: (mediciones: List<Medicion>, observaciones: String) -> Unit,
+    onGuardar: (mediciones: List<Medicion>, observaciones: String, fotoEvidenciaBytes: ByteArray?) -> Unit,
     onVolver: () -> Unit
 ) {
     val mediciones = rememberSaveable(saver = MedicionesSaver) { mutableStateListOf<Medicion>() }
@@ -65,6 +76,16 @@ fun NuevaPruebaScreen(
     var unidadMedicion by rememberSaveable { mutableStateOf("") }
     var observaciones by rememberSaveable { mutableStateOf("") }
     var errorLocal by rememberSaveable { mutableStateOf<String?>(null) }
+    var fotoEvidenciaBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    // Lanzador de Cámara para Evidencia Fotográfica en Terreno
+    val lanzadorCamaraEvidencia = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            fotoEvidenciaBitmap = bitmap
+        }
+    }
 
     // Estados para Asistente IP (Índice de Polarización)
     var r1minText by rememberSaveable { mutableStateOf("") }
@@ -99,10 +120,32 @@ fun NuevaPruebaScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // --- FOTO DE EVIDENCIA EN TERRENO CON CÁMARA ---
+            Card(modifier = Modifier.fillMaxWidth()) {
+                Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Text("📷 Evidencia Fotográfica en Terreno", style = MaterialTheme.typography.titleMedium)
+                    if (fotoEvidenciaBitmap != null) {
+                        Image(
+                            bitmap = fotoEvidenciaBitmap!!.asImageBitmap(),
+                            contentDescription = "Foto Evidencia",
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(160.dp)
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                    }
+                    OutlinedButton(
+                        onClick = { lanzadorCamaraEvidencia.launch(null) },
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(if (fotoEvidenciaBitmap == null) "📷 Tomar Foto de Evidencia" else "📷 Cambiar Foto de Evidencia")
+                    }
+                }
+            }
+
             // --- ASISTENTE DE CÁLCULO IP ---
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("⚡ Cálculo Automático de IP (Índice de Polarización)", style = MaterialTheme.typography.titleSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -144,9 +187,7 @@ fun NuevaPruebaScreen(
             }
 
             // --- ASISTENTE DE CÁLCULO TTR ---
-            Card(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Card(modifier = Modifier.fillMaxWidth()) {
                 Column(modifier = Modifier.padding(12.dp), verticalArrangement = Arrangement.spacedBy(8.dp)) {
                     Text("🔄 Cálculo Automático de TTR (Relación Transformación)", style = MaterialTheme.typography.titleSmall)
                     Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
@@ -294,7 +335,8 @@ fun NuevaPruebaScreen(
                     }
                     if (valido) {
                         errorLocal = null
-                        onGuardar(lista, observaciones)
+                        val fotoEvidenciaBytes = fotoEvidenciaBitmap?.let { ConvertidorImagen.aBytes(it) }
+                        onGuardar(lista, observaciones, fotoEvidenciaBytes)
                     }
                 },
                 modifier = Modifier.fillMaxWidth()

@@ -52,7 +52,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         }
     }
 
-    fun registrar(username: String, nombre: String, contrasena: String, rol: Rol) {
+    fun registrar(username: String, nombre: String, contrasena: String, rol: Rol, fotoBytes: ByteArray? = null) {
         if (username.isBlank() || nombre.isBlank() || contrasena.isBlank()) {
             _mensajeError.value = "Por favor completa todos los campos"
             return
@@ -63,11 +63,11 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
             _mensajeError.value = null
 
             val resultadoId = withContext(Dispatchers.IO) {
-                dbHelper.registrarUsuario(username, nombre, contrasena, rol.name)
+                dbHelper.registrarUsuario(username, nombre, contrasena, rol.name, fotoBytes)
             }
 
             if (resultadoId != -1L) {
-                _usuarioActual.value = Usuario(id = resultadoId, username = username.trim().lowercase(), nombre = nombre.trim(), rol = rol)
+                _usuarioActual.value = Usuario(id = resultadoId, username = username.trim().lowercase(), nombre = nombre.trim(), rol = rol, fotoBytes = fotoBytes)
             } else {
                 _mensajeError.value = "El usuario '$username' ya existe. Elige otro usuario."
             }

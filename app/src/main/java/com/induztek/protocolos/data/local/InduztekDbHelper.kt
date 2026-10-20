@@ -20,14 +20,14 @@ import java.time.format.DateTimeFormatter
 /**
  * Helper de SQLite nativo (SQLiteOpenHelper) para la persisencia local.
  * Gestiona la base de datos "induztek_sqlite.db" con tablas "usuarios", "equipos" y "protocolos".
- * Incluye precarga de usuarios semilla (tecnico, ingeniero, jefe, cliente) y claves foraneas activas.
+ * Soporta almacenamiento BLOB para fotos tomadas con la cámara.
  */
 class InduztekDbHelper(context: Context) :
     SQLiteOpenHelper(context, NOMBRE_BD, null, VERSION_BD) {
 
     companion object {
         private const val NOMBRE_BD = "induztek_sqlite.db"
-        private const val VERSION_BD = 2
+        private const val VERSION_BD = 3
 
         // Tabla Usuarios
         private const val TABLA_USUARIOS = "usuarios"
@@ -36,6 +36,7 @@ class InduztekDbHelper(context: Context) :
         private const val US_NOMBRE = "nombre"
         private const val US_CONTRASENA = "contrasena"
         private const val US_ROL = "rol"
+        private const val US_FOTO = "fotoBytes"
 
         // Tabla Equipos
         private const val TABLA_EQUIPOS = "equipos"
@@ -52,6 +53,7 @@ class InduztekDbHelper(context: Context) :
         private const val PR_MEDICIONES_JSON = "medicionesJson"
         private const val PR_ESTADO = "estado"
         private const val PR_OBSERVACIONES = "observaciones"
+        private const val PR_FOTO_EVIDENCIA = "fotoEvidenciaBytes"
 
         private const val SQL_CREAR_USUARIOS =
             "CREATE TABLE IF NOT EXISTS $TABLA_USUARIOS (" +
@@ -59,7 +61,8 @@ class InduztekDbHelper(context: Context) :
                 "$US_USERNAME TEXT NOT NULL UNIQUE, " +
                 "$US_NOMBRE TEXT NOT NULL, " +
                 "$US_CONTRASENA TEXT NOT NULL, " +
-                "$US_ROL TEXT NOT NULL)"
+                "$US_ROL TEXT NOT NULL, " +
+                "$US_FOTO BLOB)"
 
         private const val SQL_PRECARGAR_USUARIOS =
             "INSERT OR IGNORE INTO $TABLA_USUARIOS ($US_USERNAME, $US_NOMBRE, $US_CONTRASENA, $US_ROL) VALUES " +
@@ -83,6 +86,7 @@ class InduztekDbHelper(context: Context) :
                 "$PR_MEDICIONES_JSON TEXT NOT NULL, " +
                 "$PR_ESTADO TEXT NOT NULL, " +
                 "$PR_OBSERVACIONES TEXT, " +
+                "$PR_FOTO_EVIDENCIA BLOB, " +
                 "FOREIGN KEY($PR_EQUIPO_ID) REFERENCES $TABLA_EQUIPOS($EQ_ID))"
     }
 
@@ -108,22 +112,25 @@ class InduztekDbHelper(context: Context) :
 
     override fun onUpgrade(db: SQLiteDatabase, oldVersion: Int, newVersion: Int) {
         try {
-            db.execSQL(SQL_CREAR_USUARIOS)
-            db.execSQL(SQL_PRECARGAR_USUARIOS)
+            db.execSQL("ALTER TABLE $TABLA_USUARIOS ADD COLUMN $US_FOTO BLOB")
+            db.execSQL("ALTER TABLE $TABLA_PROTOCOLOS ADD COLUMN $PR_FOTO_EVIDENCIA BLOB")
         } catch (e: Exception) {
-            e.printStackTrace()
+            onCreate(db)
         }
     }
 
     // --- CRUD USUARIOS ---
 
-    fun registrarUsuario(username: String, nombre: String, contrasena: String, rol: String): Long {
+    fun registrarUsuario(username: String, nombre: String, contrasena: String, rol: String, fotoBytes: ByteArray? = null): Long {
         return try {
             val valores = ContentValues().apply {
                 put(US_USERNAME, username.trim().lowercase())
                 put(US_NOMBRE, nombre.trim())
                 put(US_CONTRASENA, contrasena)
                 put(US_ROL, rol)
+                if (fotoBytes != null) {
+                    put(US_FOTO, fotoBytes)
+                }
             }
             writableDatabase.insert(TABLA_USUARIOS, null, valores)
         } catch (e: Exception) {
@@ -144,8 +151,11 @@ class InduztekDbHelper(context: Context) :
                     val user = cursor.getString(cursor.getColumnIndexOrThrow(US_USERNAME))
                     val nom = cursor.getString(cursor.getColumnIndexOrThrow(US_NOMBRE))
                     val rolStr = cursor.getString(cursor.getColumnIndexOrThrow(US_ROL))
+                    val fotoIndex = cursor.getColumnIndex(US_FOTO)
+                    val fotoBytes = if (fotoIndex != -1 && !cursor.isNull(fotoIndex)) cursor.getBlob(fotoIndex) else null
+
                     val rol = try { Rol.valueOf(rolStr) } catch (e: Exception) { Rol.TECNICO }
-                    Usuario(id = id, username = user, nombre = nom, rol = rol)
+                    Usuario(id = id, username = user, nombre = nom, rol = rol, fotoBytes = fotoBytes)
                 } else null
             }
         } catch (e: Exception) {
@@ -241,6 +251,9 @@ class InduztekDbHelper(context: Context) :
                 put(PR_MEDICIONES_JSON, medicionesAJson(protocolo.mediciones))
                 put(PR_ESTADO, protocolo.estado.name)
                 put(PR_OBSERVACIONES, protocolo.observaciones)
+                if (protocolo.fotoEvidenciaBytes != null) {
+                    put(PR_FOTO_EVIDENCIA, protocolo.fotoEvidenciaBytes)
+                }
             }
             writableDatabase.insert(TABLA_PROTOCOLOS, null, valores)
         } catch (e: Exception) {
@@ -254,6 +267,9 @@ class InduztekDbHelper(context: Context) :
             val valores = ContentValues().apply {
                 put(PR_ESTADO, protocolo.estado.name)
                 put(PR_OBSERVACIONES, protocolo.observaciones)
+                if (protocolo.fotoEvidenciaBytes != null) {
+                    put(PR_FOTO_EVIDENCIA, protocolo.fotoEvidenciaBytes)
+                }
             }
             writableDatabase.update(
                 TABLA_PROTOCOLOS,
@@ -307,6 +323,8 @@ class InduztekDbHelper(context: Context) :
         val jsonStr = cursor.getString(cursor.getColumnIndexOrThrow(PR_MEDICIONES_JSON))
         val estadoStr = cursor.getString(cursor.getColumnIndexOrThrow(PR_ESTADO))
         val observaciones = cursor.getString(cursor.getColumnIndexOrThrow(PR_OBSERVACIONES)) ?: ""
+        val fotoIndex = cursor.getColumnIndex(PR_FOTO_EVIDENCIA)
+        val fotoEvidenciaBytes = if (fotoIndex != -1 && !cursor.isNull(fotoIndex)) cursor.getBlob(fotoIndex) else null
 
         val fechaHora = try {
             LocalDateTime.parse(fechaStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
@@ -328,7 +346,8 @@ class InduztekDbHelper(context: Context) :
             fechaHora = fechaHora,
             mediciones = mediciones,
             estado = estado,
-            observaciones = observaciones
+            observaciones = observaciones,
+            fotoEvidenciaBytes = fotoEvidenciaBytes
         )
     }
 

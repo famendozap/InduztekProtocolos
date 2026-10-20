@@ -97,6 +97,7 @@ class InduztekViewModel(application: Application) : AndroidViewModel(application
         equipoId: Long,
         mediciones: List<Medicion>,
         observaciones: String,
+        fotoEvidenciaBytes: ByteArray? = null,
         onRegistrado: () -> Unit
     ) {
         if (mediciones.isEmpty()) {
@@ -109,10 +110,9 @@ class InduztekViewModel(application: Application) : AndroidViewModel(application
                     equipoId = equipoId,
                     fechaHora = LocalDateTime.now(),
                     mediciones = mediciones,
-                    // RN-04: el técnico solo registra en terreno; formalizar es del ingeniero/jefe
-                    // (requiere roles, aún no implementados).
                     estado = EstadoProtocolo.REGISTRADO_EN_TERRENO,
-                    observaciones = observaciones.trim()
+                    observaciones = observaciones.trim(),
+                    fotoEvidenciaBytes = fotoEvidenciaBytes
                 )
             )
             onRegistrado()

@@ -94,7 +94,8 @@ fun ListaEquiposScreen(
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            AvatarCircular(tamano = 36.dp)
+                            val userBitmap = usuario.fotoBytes?.let { com.induztek.protocolos.data.local.ConvertidorImagen.desdeBytes(it) }
+                            AvatarCircular(bitmap = userBitmap, tamano = 36.dp)
                             Spacer(modifier = Modifier.width(10.dp))
                             Text(
                                 text = usuario.nombre,

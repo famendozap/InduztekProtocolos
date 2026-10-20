@@ -1,5 +1,8 @@
 package com.induztek.protocolos.ui.screens.auth
 
+import android.graphics.Bitmap
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -8,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenuItem
@@ -15,6 +20,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -27,14 +33,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.unit.dp
+import com.induztek.protocolos.data.local.ConvertidorImagen
 import com.induztek.protocolos.model.Rol
+import com.induztek.protocolos.ui.components.AvatarCircular
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegistroScreen(
     cargando: Boolean = false,
     mensajeError: String? = null,
-    onRegistrarClick: (username: String, nombre: String, contrasena: String, rol: Rol) -> Unit,
+    onRegistrarClick: (username: String, nombre: String, contrasena: String, rol: Rol, fotoBytes: ByteArray?) -> Unit,
     onVolverALogin: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
@@ -42,17 +50,39 @@ fun RegistroScreen(
     var contrasena by remember { mutableStateOf("") }
     var rolSeleccionado by remember { mutableStateOf(Rol.TECNICO) }
     var menuRolExpandido by remember { mutableStateOf(false) }
+    var fotoBitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    // Lanzador de Cámara de Compose
+    val lanzadorCamara = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview()
+    ) { bitmap ->
+        if (bitmap != null) {
+            fotoBitmap = bitmap
+        }
+    }
 
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(rememberScrollState())
             .padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Text(text = "Crear Nueva Cuenta", style = MaterialTheme.typography.headlineMedium)
 
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Avatar con cámara
+        AvatarCircular(bitmap = fotoBitmap, tamano = 72.dp)
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        OutlinedButton(onClick = { lanzadorCamara.launch(null) }) {
+            Text("📷 Tomar Foto de Credencial")
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = username,
@@ -134,7 +164,10 @@ fun RegistroScreen(
         Spacer(modifier = Modifier.height(24.dp))
 
         Button(
-            onClick = { onRegistrarClick(username, nombre, contrasena, rolSeleccionado) },
+            onClick = {
+                val fotoBytes = fotoBitmap?.let { ConvertidorImagen.aBytes(it) }
+                onRegistrarClick(username, nombre, contrasena, rolSeleccionado, fotoBytes)
+            },
             enabled = !cargando,
             modifier = Modifier.fillMaxWidth()
         ) {

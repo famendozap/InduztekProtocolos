@@ -82,8 +82,8 @@ fun InduztekApp(application: Application) {
             RegistroScreen(
                 cargando = cargando,
                 mensajeError = authMensajeError,
-                onRegistrarClick = { username, nombre, contrasena, rol ->
-                    authViewModel.registrar(username, nombre, contrasena, rol)
+                onRegistrarClick = { username, nombre, contrasena, rol, fotoBytes ->
+                    authViewModel.registrar(username, nombre, contrasena, rol, fotoBytes)
                 },
                 onVolverALogin = {
                     authViewModel.limpiarError()
@@ -155,8 +155,8 @@ fun InduztekApp(application: Application) {
                 codigoEquipo = equipos.find { it.id == equipoId }?.codigo ?: "",
                 mensajeError = mensajeError,
                 onLimpiarError = { viewModel.limpiarError() },
-                onGuardar = { mediciones, observaciones ->
-                    viewModel.registrarProtocolo(equipoId, mediciones, observaciones) {
+                onGuardar = { mediciones, observaciones, fotoEvidenciaBytes ->
+                    viewModel.registrarProtocolo(equipoId, mediciones, observaciones, fotoEvidenciaBytes) {
                         navController.popBackStack()
                     }
                 },
